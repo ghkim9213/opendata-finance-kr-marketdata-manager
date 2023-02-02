@@ -21,6 +21,7 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models import Max
 from django.conf import settings
+from django.core.files.base import ContentFile
 from functools import reduce
 from io import BytesIO
 from itertools import product, zip_longest
@@ -533,6 +534,9 @@ class StockPrice(OpenApiData):
     is_monthend = models.BooleanField(default=False)
     objects = StockPriceManager()
 
+    #
+    file = models.FileField(upload_to='openapi-stock-prices-clone', null=True)
+
     class Meta:
         db_table = 'stock_price'
 
@@ -591,6 +595,14 @@ class StockPrice(OpenApiData):
                 )
             } for nm, rnm in self.RENAME_MAP.items()
         }
+
+    def write_file(self):
+        filename = f"stock_price_{self.date.strftime('%Y%m%d')}.csv"
+        csv_buffer = convert_records_to_csv(self.records)
+        csv_file = ContentFile(csv_buffer.getvalue().encode('utf-8'))
+        self.file.save(filename, csv_file)
+        return None
+
 
 
 class Variable(models.Model):

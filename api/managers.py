@@ -153,6 +153,7 @@ class StockPriceManager(models.Manager):
                 records = records,
                 is_monthend = current_latest.month < dt.month,
             )
+            obj.write_file()
             print(f"StockPrice for {obj.__str__()} was created.")
             prev_dt = dt
             dt += timedelta(days=1)
