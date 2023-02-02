@@ -536,6 +536,7 @@ class StockPrice(OpenApiData):
 
     #
     file = models.FileField(upload_to='openapi-stock-prices-clone', null=True)
+    url = models.TextField(null=True)
 
     class Meta:
         db_table = 'stock_price'
@@ -601,6 +602,8 @@ class StockPrice(OpenApiData):
         csv_buffer = convert_records_to_csv(self.records)
         csv_file = ContentFile(csv_buffer.getvalue().encode('utf-8'))
         self.file.save(filename, csv_file)
+        self.url = self.file.url.split('?')[0]
+        self.save()
         return None
 
 
@@ -727,7 +730,7 @@ class Variable(models.Model):
         }]
         zf = create_zipfile(files_to_zip)
         self.file.save(self.zipfile_name, zf)
-        self.url = self.file.url
+        self.url = self.file.url.split('?')[0]
         self.save()
         print(f"{self.zipfile_name} was saved on cloud storage.")
 
@@ -1197,7 +1200,7 @@ class Backtester(models.Model):
         }]
         zf = create_zipfile(files_to_zip)
         self.file.save(f"{self.filename}.zip", zf)
-        self.url = self.file.url
+        self.url = self.file.url.split('?')[0]
         self.save()
         print(f"{self.filename}.zip was saved on cloud storage.")
 

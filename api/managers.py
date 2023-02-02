@@ -399,7 +399,7 @@ class PriceRatioManager(models.Manager):
 class MomentumManager(models.Manager):
     def get_or_create_using_conf(self, conf):
         obj, created = self.get_or_create(
-            name = 'prior_return',
+            name = f"prior_return_{conf['near']}_{conf['far']}",
             near = conf['near'],
             far = conf['far']
         )
