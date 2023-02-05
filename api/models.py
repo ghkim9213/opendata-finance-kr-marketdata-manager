@@ -598,14 +598,20 @@ class StockPrice(OpenApiData):
         }
 
     def write_file(self):
-        filename = f"stock_price_{self.date.strftime('%Y%m%d')}.csv"
-        csv_buffer = convert_records_to_csv(self.records)
-        csv_file = ContentFile(csv_buffer.getvalue().encode('utf-8'))
-        self.file.save(filename, csv_file)
+        filename = f"stock_price_{self.date.strftime('%Y%m%d')}"
+        # csv_filename = f"stock_price_{self.date.strftime('%Y%m%d')}.csv"
+        files_to_zip = [{
+            'name': f"{filename}.csv",
+            'file': convert_records_to_csv(self.records)
+        }]
+        zf = create_zipfile(files_to_zip)
+        self.file.save(f"{filename}.zip", zf)
+        # csv_buffer = convert_records_to_csv(self.records)
+        # csv_file = ContentFile(csv_buffer.getvalue().encode('utf-8'))
+        # self.file.save(filename, csv_file)
         self.url = self.file.url.split('?')[0]
         self.save()
         return None
-
 
 
 class Variable(models.Model):
