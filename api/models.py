@@ -898,7 +898,7 @@ class Size(Variable):
             data += prc.select_columns(columns=['mktcap'])
         for r in data:
             r['value'] = r.pop('mktcap')
-            r['date'] = r['date'].strftime('%Y%m%d')
+            r['date'] = (r['date'] + relativedelta(day=31)).strftime('%Y%m%d')
         return data
 
 

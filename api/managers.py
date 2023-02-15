@@ -151,8 +151,11 @@ class StockPriceManager(models.Manager):
             obj = self.create(
                 date = dt,
                 records = records,
-                is_monthend = current_latest.month < dt.month,
             )
+            if current_latest.month < dt.month:
+                obj_monthend = self.get(date=current_latest)
+                obj_monthend.is_monthend = True
+                obj_monthend.save()
             obj.write_file()
             print(f"StockPrice for {obj.__str__()} was created.")
             prev_dt = dt
@@ -307,7 +310,7 @@ class VariableManager:
             return ls
 
     def list(self):
-        return bulk_sync(return_list=True)
+        return self.bulk_sync(return_list=True)
 
 
 class SingleAccountManager(models.Manager):
